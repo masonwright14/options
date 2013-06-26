@@ -22,6 +22,18 @@ public abstract class OptionUtil {
     
     public static final int NOT_APPLICABLE_INT = -5;
     
+    public static int getNumber(final String number) {
+        if (number == null) {
+            throw new IllegalArgumentException();
+        }
+        
+        if (number.equals(NOT_APPLICABLE)) {
+            return NOT_APPLICABLE_INT;
+        }
+        
+        return Integer.parseInt(number.replaceAll(",", ""));
+    }
+    
     public static int getPriceInThousandths(final String number) {
         if (number == null) {
             throw new IllegalArgumentException();

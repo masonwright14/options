@@ -196,8 +196,8 @@ public abstract class StockPageVisitor {
                     OptionUtil.getPriceInThousandths(c.get(bidIndex)), 
                     OptionUtil.getPriceInThousandths(c.get(askIndex)), 
                     OptionUtil.getPriceInThousandths(c.get(lastIndex)),
-                    OptionUtil.getPriceInThousandths(c.get(volumeIndex)), 
-                    OptionUtil.getPriceInThousandths(c.get(openIntervalIndex))
+                    OptionUtil.getNumber(c.get(volumeIndex)), 
+                    OptionUtil.getNumber(c.get(openIntervalIndex))
                 )
             );
         }
@@ -211,8 +211,8 @@ public abstract class StockPageVisitor {
                     OptionUtil.getPriceInThousandths(p.get(bidIndex)), 
                     OptionUtil.getPriceInThousandths(p.get(askIndex)), 
                     OptionUtil.getPriceInThousandths(p.get(lastIndex)),
-                    OptionUtil.getPriceInThousandths(p.get(volumeIndex)), 
-                    OptionUtil.getPriceInThousandths(p.get(openIntervalIndex))
+                    OptionUtil.getNumber(p.get(volumeIndex)), 
+                    OptionUtil.getNumber(p.get(openIntervalIndex))
                 )
             );
         }
