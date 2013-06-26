@@ -5,10 +5,12 @@ import java.util.List;
 
 public abstract class StockSymbolWiki {
     
-    final static String djiaSymbols ="AA,AXP,BA,BAC,CAT,CSCO,CVX,DD,DIS,GE,HD,HPQ,IBM,INTC,JNJ,JPM,KO,MCD,MMM,MRK,MSFT,PFE,PG,T,TRV,UNH,UTX,VZ,WMT,XOM";
+    private static final String DJIA_SYMBOLS = "AA,AXP,BA,BAC,CAT,CSCO," 
+        + "CVX,DD,DIS,GE,HD,HPQ,IBM,INTC,JNJ,JPM,KO,MCD,MMM," 
+        + "MRK,MSFT,PFE,PG,T,TRV,UNH,UTX,VZ,WMT,XOM";
     
     public static List<String> getDjiaSymbols() {        
-        return Arrays.asList(djiaSymbols.split(","));
+        return Arrays.asList(DJIA_SYMBOLS.split(","));
     }
     
     /*
@@ -39,7 +41,8 @@ public abstract class StockSymbolWiki {
     private static String getDataTable() {
         final String source = getWikiText();
         final String startString = 
-        "<table class=\"wikitable sortable\">\n<tr>\n<th><a href=\"/wiki/Ticker_symbol\"";
+            "<table class=\"wikitable sortable\">\n" 
+            + "<tr>\n<th><a href=\"/wiki/Ticker_symbol\"";
         int startIndex = source.indexOf(startString);
         if (startIndex < 0) {
             throw new IllegalArgumentException();

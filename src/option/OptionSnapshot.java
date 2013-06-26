@@ -29,7 +29,6 @@ public final class OptionSnapshot {
         + "," + ASK_IN_THOUSANDTHS + "," + LAST_IN_THOUSANDTHS
         + "," + VOLUME + "," + OPEN_INTERVAL;
 
-
     public OptionSnapshot(
         final String aOptionSymbol, 
         final String aStockSymbol,
@@ -38,17 +37,17 @@ public final class OptionSnapshot {
         final int aLastInThousandths,
         final int aVolume,
         final int aOpenInterval
-    ) {
+    ) throws InstantiationException {
         if (!OptionSymbolUtil.isOptionSymbol(aOptionSymbol)) {
-            throw new IllegalArgumentException(aOptionSymbol);
+            throw new InstantiationException(aOptionSymbol);
         }
         
         if (aStockSymbol == null || aStockSymbol.length() == 0) {
-            throw new IllegalArgumentException(aOptionSymbol);
+            throw new InstantiationException(aOptionSymbol);
         }
         
         if (aBidInThousandths > aAskInThousandths) {
-            throw new IllegalArgumentException();
+            throw new InstantiationException();
         }
         
         this.optionSymbol = aOptionSymbol;

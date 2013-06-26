@@ -10,9 +10,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import option.OptionUtil;
 import option.MyDate;
-
+import option.OptionUtil;
 import stocksymbols.StockSymbolWiki;
 
 public abstract class StockListFinder {
@@ -21,7 +20,6 @@ public abstract class StockListFinder {
     
     public static final String STOCK_LIST_PREFIX = "stockList";
    
-    
     public static boolean isStockListSameAsMostRecent() {
         List<File> stockListFiles = getStockListFiles();
         if (stockListFiles.isEmpty()) {

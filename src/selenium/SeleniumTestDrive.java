@@ -13,7 +13,6 @@ public abstract class SeleniumTestDrive {
     public static void main(final String[] args) {
         secondExample();
     }
-
     
     @SuppressWarnings("unused")
     private static void firstExample() {

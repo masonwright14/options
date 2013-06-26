@@ -1,6 +1,5 @@
 package selenium;
 
-
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
@@ -14,5 +13,4 @@ public abstract class SeleniumWebReader {
         driver.quit();
         return result;
     }
-
 }

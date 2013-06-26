@@ -17,16 +17,16 @@ public final class MyDate {
         final Month aMonth,
         final int aDay,
         final int aYear
-    ) {
+    ) throws InstantiationException {
         if (aMonth == null) {
-            throw new IllegalArgumentException();
+            throw new InstantiationException();
         }
         if (aDay < 1 || aDay > MAX_DAY) {
-            throw new IllegalArgumentException();
+            throw new InstantiationException();
         }
 
         if (aYear < MIN_YEAR || aYear > MAX_YEAR) {
-            throw new IllegalArgumentException();
+            throw new InstantiationException();
         }
         
         this.month = aMonth;
@@ -37,9 +37,9 @@ public final class MyDate {
     public MyDate(
         final Month aMonth,
         final int aYear
-    ) {
+    ) throws InstantiationException {
         if (aMonth == null) {
-            throw new IllegalArgumentException();
+            throw new InstantiationException();
         }
 
 
@@ -47,7 +47,7 @@ public final class MyDate {
             final int twoThousand = 2000;
             final int aughtsYear = aYear - twoThousand;
             if (aughtsYear < MIN_YEAR || aughtsYear > MAX_YEAR) {
-                throw new IllegalArgumentException("" + aughtsYear);
+                throw new InstantiationException("" + aughtsYear);
             }
             
             this.year = aughtsYear;

@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import notifications.EmailSender;
 import option.MyDate;
 import option.OptionSnapshot;
 import option.OptionSymbolUtil;
@@ -45,6 +47,7 @@ public abstract class StockPageVisitor {
         final String fileName = FILE_PREFIX + getDateAsYYMMDD() + CSV_SUFFIX;
         final File outputFile = new File(fileName);
         
+        Logger.clearMessages();
         Writer output = null;
         try {
             if (!outputFile.createNewFile()) {
@@ -69,7 +72,42 @@ public abstract class StockPageVisitor {
         }
         
         for (String stockSymbol: StockSymbolWiki.getDjiaSymbols()) {
-            printToCsv(visitBySymbol(stockSymbol), outputFile);
+            try {
+                printToCsv(doVisitBySymbol(stockSymbol), outputFile);
+            } catch (Exception e) {
+                Logger.logMessage("failed to visit symbol: " + stockSymbol);
+            }
+        }
+        
+        if (Logger.getMessagesAsString() != null) {
+            EmailSender.sendEmail(
+                "masonwright14@gmail.com", 
+                "ERROR", 
+                Logger.getMessagesAsString()
+            );
+        }
+    }
+    
+    public final List<OptionSnapshot> visitBySymbol(final String stockSymbol) {
+        Logger.clearMessages();
+        try {
+            return doVisitBySymbol(stockSymbol);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public static List<OptionSnapshot> visitBySymbolAndDate(
+        final String stockSymbol, 
+        final MyDate date
+    ) {
+        Logger.clearMessages();
+        try {
+            return doVisitBySymbolAndDate(stockSymbol, date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
         }
     }
     
@@ -109,8 +147,9 @@ public abstract class StockPageVisitor {
         }
     }
     
-    
-    public static List<OptionSnapshot> visitBySymbol(final String stockSymbol) {
+    private static List<OptionSnapshot> doVisitBySymbol(
+        final String stockSymbol
+    ) throws Exception {
         final String url = OPTION_PAGE_PREFIX + getUrlSymbol(stockSymbol);
         final String text = SeleniumWebReader.getText(url);
         final List<OptionSnapshot> result = new ArrayList<OptionSnapshot>();
@@ -122,16 +161,22 @@ public abstract class StockPageVisitor {
         
         final List<MyDate> expirationDates = getExpirationDates(text);
         for (MyDate date: expirationDates) {
-            result.addAll(visitBySymbolAndDate(stockSymbol, date));
+            try {
+                result.addAll(doVisitBySymbolAndDate(stockSymbol, date));
+            } catch (ParseException e) {
+                Logger.logMessage(
+                    "failed to visit: " + stockSymbol + " " + date
+                );
+            }
         }
         
         return result;
     }
     
-    public static List<OptionSnapshot> visitBySymbolAndDate(
+    private static List<OptionSnapshot> doVisitBySymbolAndDate(
         final String stockSymbol, 
         final MyDate date
-    ) {
+    ) throws ParseException {
         final String url = 
             STACKED_VIEW_PREFIX + getUrlSymbol(stockSymbol)
             + MONTH_PAGE_INFIX + "20" + date.getYear() + "-" 
@@ -159,7 +204,7 @@ public abstract class StockPageVisitor {
         );
         final List<List<String>> putTableData = 
             WebStrings.getTableContents(putTableText);
-        
+                
         return handleOptionPageData(stockSymbol, callTableData, putTableData);
     }
     
@@ -167,12 +212,11 @@ public abstract class StockPageVisitor {
         final String stockSymbol,
         final List<List<String>> callTableData,
         final List<List<String>> putTableData
-    ) {
+    ) throws ParseException {
         if (
             callTableData == null || putTableData == null
-            || callTableData.isEmpty() || putTableData.isEmpty()
         ) {
-            throw new IllegalArgumentException();
+            throw new ParseException("Null table: " + stockSymbol, 0);
         }
         
         final int optionSymbolIndex = callTableData.get(0).indexOf("Symbol");
@@ -189,38 +233,62 @@ public abstract class StockPageVisitor {
                 continue;
             }
             
-            result.add(
-                new OptionSnapshot(
-                    c.get(optionSymbolIndex), 
-                    stockSymbol, 
-                    OptionUtil.getPriceInThousandths(c.get(bidIndex)), 
-                    OptionUtil.getPriceInThousandths(c.get(askIndex)), 
-                    OptionUtil.getPriceInThousandths(c.get(lastIndex)),
-                    OptionUtil.getNumber(c.get(volumeIndex)), 
-                    OptionUtil.getNumber(c.get(openIntervalIndex))
-                )
-            );
+            try {
+                result.add(
+                    new OptionSnapshot(
+                        c.get(optionSymbolIndex), 
+                        stockSymbol, 
+                        OptionUtil.getPriceInThousandths(c.get(bidIndex)), 
+                        OptionUtil.getPriceInThousandths(c.get(askIndex)), 
+                        OptionUtil.getPriceInThousandths(c.get(lastIndex)),
+                        OptionUtil.getNumber(c.get(volumeIndex)), 
+                        OptionUtil.getNumber(c.get(openIntervalIndex))
+                    )
+                );
+            } catch (InstantiationException e) {
+                Logger.logMessage(
+                    "failed to get snapshot: " + c.get(optionSymbolIndex)
+                );
+            } catch (Exception e) {
+                Logger.logMessage(
+                    "failed to get a number: " 
+                    + c.get(optionSymbolIndex) + " " + e.getMessage()
+                );
+            }
         }
         
         for (int putIndex = 1; putIndex < putTableData.size(); putIndex++) {
             final List<String> p = putTableData.get(putIndex);
-            result.add(
-                new OptionSnapshot(
-                    p.get(optionSymbolIndex), 
-                    stockSymbol, 
-                    OptionUtil.getPriceInThousandths(p.get(bidIndex)), 
-                    OptionUtil.getPriceInThousandths(p.get(askIndex)), 
-                    OptionUtil.getPriceInThousandths(p.get(lastIndex)),
-                    OptionUtil.getNumber(p.get(volumeIndex)), 
-                    OptionUtil.getNumber(p.get(openIntervalIndex))
-                )
-            );
+            try {
+                result.add(
+                    new OptionSnapshot(
+                        p.get(optionSymbolIndex), 
+                        stockSymbol, 
+                        OptionUtil.getPriceInThousandths(p.get(bidIndex)), 
+                        OptionUtil.getPriceInThousandths(p.get(askIndex)), 
+                        OptionUtil.getPriceInThousandths(p.get(lastIndex)),
+                        OptionUtil.getNumber(p.get(volumeIndex)), 
+                        OptionUtil.getNumber(p.get(openIntervalIndex))
+                    )
+                );
+            } catch (InstantiationException e) {
+                Logger.logMessage(
+                    "failed to get snapshot: " + p.get(optionSymbolIndex)
+                );
+            } catch (Exception e) {
+                Logger.logMessage(
+                    "failed to get a number: " 
+                    + p.get(optionSymbolIndex) + " " + e.getMessage()
+                );
+            }
         }
         
         return result;
     }
     
-    private static List<MyDate> getExpirationDates(final String source) {
+    private static List<MyDate> getExpirationDates(
+        final String source
+    ) throws Exception {
         List<MyDate> result = new ArrayList<MyDate>();
         
         final String wrappedDates = WebStrings.getStringBetween(
@@ -230,6 +298,7 @@ public abstract class StockPageVisitor {
         );
                 
         Set<String> dateStrings = new HashSet<String>();
+        
         dateStrings.addAll(WebStrings.getTagContents("b", wrappedDates));
         dateStrings.addAll(WebStrings.getTagContents("a", wrappedDates));
         dateStrings.addAll(WebStrings.getTagContents("strong", wrappedDates));

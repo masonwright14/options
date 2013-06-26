@@ -9,7 +9,6 @@ import java.util.List;
 import launcher.StockListFinder;
 import launcher.Util;
 
-
 public abstract class StockListRetriever {
 
     public static void printStockListToFileIfNeeded() {

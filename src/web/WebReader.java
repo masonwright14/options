@@ -10,25 +10,29 @@ import java.net.URLConnection;
 public abstract class WebReader {
     
     public static String getText(final String address) {
-        URL url;
-        URLConnection yc;
-        BufferedReader br = null;
-        String line;
-
+        BufferedReader reader = null;
+        
         try {
-            url = new URL(address);
+            final URL url = new URL(address);
             
             System.setProperty("http.agent", "");
 
-            yc = url.openConnection();
-            yc.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36");
-            System.out.println(yc.getRequestProperties());
-            br = new BufferedReader(new InputStreamReader(yc.getInputStream()));
+            final URLConnection connection = url.openConnection();
+            connection.setRequestProperty(
+                "User-Agent", "Mozilla/5.0 " 
+                + "(Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.36 " 
+                + "(KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36"
+    		);
+            reader = new BufferedReader(
+                new InputStreamReader(connection.getInputStream())
+            );
 
-            StringBuilder builder = new StringBuilder();
-            while ((line = br.readLine()) != null) {
+            final StringBuilder builder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
                 builder.append(line).append('\n');
             }
+            
             return builder.toString();
         } catch (MalformedURLException mue) {
              mue.printStackTrace();
@@ -36,8 +40,8 @@ public abstract class WebReader {
              ioe.printStackTrace();
         } finally {
             try {
-                if (br != null) {
-                    br.close();
+                if (reader != null) {
+                    reader.close();
                 }
             } catch (IOException ioe) {
                 ioe.printStackTrace();

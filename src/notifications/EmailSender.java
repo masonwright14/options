@@ -11,45 +11,52 @@ import javax.mail.internet.MimeMessage;
 
 public abstract class EmailSender {
     
-    public static void msgsend() {
+    public static void sendEmail(
+        final String to,
+        final String subject,
+        final String body
+    ) {
         String username = "masonwright14@gmail.com";
         String password = "*****";
         String smtphost = "smtp.gmail.com";
-        String compression = "subject";
         String from = "masonwright14@gmail.com";
-        String to = "masonwright14@gmail.com";
-        String body = "Hello World!";
         Transport myTransport = null;
 
-  try {
-  Properties props = System.getProperties();
-  props.put("mail.smtp.host", "smtp.gmail.com");
-      props.put("mail.smtp.socketFactory.port", "465");
-      props.put("mail.smtp.socketFactory.class",
-              "javax.net.ssl.SSLSocketFactory");
-      props.put("mail.smtp.auth", "true");
-      props.put("mail.smtp.port", "465");
+        try {
+           Properties props = System.getProperties();
+           props.put("mail.smtp.host", "smtp.gmail.com");
+               props.put("mail.smtp.socketFactory.port", "465");
+               props.put(
+                   "mail.smtp.socketFactory.class",
+                   "javax.net.ssl.SSLSocketFactory"
+               );
+               props.put("mail.smtp.auth", "true");
+               props.put("mail.smtp.port", "465");
 
-  Session mailSession = Session.getDefaultInstance(props, null);
-  Message msg = new MimeMessage(mailSession);
-  msg.setFrom(new InternetAddress(from));
-  InternetAddress[] address = {new InternetAddress(to)};
-  msg.setRecipients(Message.RecipientType.TO, address);
-  msg.setSubject(compression);
-  msg.setText(body);
-  msg.setSentDate(new Date());
+           Session mailSession = Session.getDefaultInstance(props, null);
+           Message msg = new MimeMessage(mailSession);
+           msg.setFrom(new InternetAddress(from));
+           InternetAddress[] address = {new InternetAddress(to)};
+           msg.setRecipients(Message.RecipientType.TO, address);
+           msg.setSubject(subject);
+           msg.setText(body);
+           msg.setSentDate(new Date());
 
-   myTransport = mailSession.getTransport("smtp");
-    myTransport.connect(smtphost, username, password);
-    msg.saveChanges();
-    myTransport.sendMessage(msg, msg.getAllRecipients());
-    myTransport.close();
-   } catch (Exception e) {
-      e.printStackTrace();
+           myTransport = mailSession.getTransport("smtp");
+           myTransport.connect(smtphost, username, password);
+           msg.saveChanges();
+           myTransport.sendMessage(msg, msg.getAllRecipients());
+           myTransport.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-  }
 
-  public static void main(String[] argv) {
-      msgsend();
-  }
+    public static void main(final String[] args) {
+        sendEmail(
+            "masonwright14@gmail.com",
+            "test",
+            "Hello world!"
+        );
+    }
 }

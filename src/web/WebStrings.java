@@ -1,37 +1,41 @@
 package web;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class WebStrings {
-    public static List<List<String>> getTableContents(final String source) {
+    
+    public static List<List<String>> getTableContents(
+        final String source
+    ) throws ParseException {
         if (source == null) {
             throw new IllegalArgumentException();
         }
         
         int i = source.indexOf("<table");
         if (i < 0) {
-            throw new IllegalStateException();
+            throw new ParseException("table", 0);
         }
         
         final int endTable = source.indexOf("</table>", i);
         if (endTable < 0) {
-            throw new IllegalStateException();
+            throw new ParseException("table", 0);
         }
         
         List<List<String>> result = new ArrayList<List<String>>();
         
         i = source.indexOf("<tr", i);
         if (i < 0) {
-            throw new IllegalStateException();
+            throw new ParseException("table", 0);
         }
         while (i < endTable && i > 0) {
             final int endRowLength = 5;
             final int endRow = source.indexOf("</tr>", i) + endRowLength;
             if (endRow < 0) {
-                throw new IllegalStateException();
+                throw new ParseException("table", 0);
             }
             
             result.add(getTableRowContents(source.substring(i, endRow)));
@@ -42,19 +46,21 @@ public abstract class WebStrings {
         return result;
     }
     
-    public static List<String> getTableRowContents(final String source) {
+    public static List<String> getTableRowContents(
+        final String source
+    ) throws ParseException {
         if (source == null) {
             throw new IllegalArgumentException();
         }
                         
         int i = source.indexOf("<tr");
         if (i < 0) {
-            throw new IllegalStateException();
+            throw new ParseException("table", 0);
         }
         
         final int endRow = source.indexOf("</tr>", i);
         if (endRow < 0) {
-            throw new IllegalStateException();
+            throw new ParseException("table", 0);
         }
         
         List<String> result = new ArrayList<String>();
@@ -79,7 +85,7 @@ public abstract class WebStrings {
                     source.indexOf("</td>", i) < 0 
                     || source.indexOf("</td>", i) > endRow
                 ) {
-                    throw new IllegalStateException(source.substring(i));
+                    throw new ParseException("table", 0);
                 }
                 endItem = source.indexOf("</td>", i) + endTagLength;
             } else {
@@ -87,9 +93,7 @@ public abstract class WebStrings {
                     source.indexOf("</th>", i) < 0 
                     || source.indexOf("</th>", i) > endRow
                 ) {
-                    throw new IllegalStateException(
-                        source.substring(i, endTagLength)
-                    );
+                    throw new ParseException("table", 0);
                 }
                 endItem = source.indexOf("</th>", i) + endTagLength;
             }
@@ -101,7 +105,8 @@ public abstract class WebStrings {
         return result;
     }
     
-    public static String getNestedTagContents(final String source) {
+    public static String getNestedTagContents(final String source) 
+        throws ParseException {
         if (source == null) {
             throw new IllegalArgumentException();
         }
@@ -109,7 +114,7 @@ public abstract class WebStrings {
         Pattern closeTag = Pattern.compile("</[a-z]+>");
         Matcher matcher = closeTag.matcher(source);
         if (!matcher.find()) {
-            throw new IllegalArgumentException(source);
+            throw new ParseException("tag", 0);
         }
         
         int endIndex = matcher.start();
@@ -119,7 +124,7 @@ public abstract class WebStrings {
         }
         
         if (source.charAt(i) != '>') {
-            throw new IllegalArgumentException();
+            throw new ParseException("tag", 0);
         }
         
         return source.substring(i + 1, endIndex);
@@ -128,7 +133,7 @@ public abstract class WebStrings {
     public static List<String> getTagContents(
         final String tag, 
         final String source
-    ) {
+    ) throws ParseException {
         if (source == null) {
             throw new IllegalArgumentException();
         }
@@ -149,14 +154,14 @@ public abstract class WebStrings {
             
             i = source.indexOf(">", i);
             if (i < 0) {
-                throw new IllegalStateException();
+                throw new ParseException("tag", 0);
             }
             
             int startIndex = i + 1;
             i = startIndex;
             i = source.indexOf("</" + tag + ">", i);
             if (i < 0) {
-                throw new IllegalStateException();
+                throw new ParseException("tag", 0);
             }
             result.add(source.substring(startIndex, i));
         }

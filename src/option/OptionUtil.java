@@ -22,7 +22,8 @@ public abstract class OptionUtil {
     
     public static final int NOT_APPLICABLE_INT = -5;
     
-    public static int getNumber(final String number) {
+    public static int getNumber(final String number) 
+        throws Exception {
         if (number == null) {
             throw new IllegalArgumentException();
         }
@@ -31,10 +32,16 @@ public abstract class OptionUtil {
             return NOT_APPLICABLE_INT;
         }
         
-        return Integer.parseInt(number.replaceAll(",", ""));
+        try {
+            int result = Integer.parseInt(number.replaceAll(",", ""));
+            return result;
+        } catch (NumberFormatException e) {
+            throw new Exception(number);
+        }
     }
     
-    public static int getPriceInThousandths(final String number) {
+    public static int getPriceInThousandths(final String number) 
+        throws Exception {
         if (number == null) {
             throw new IllegalArgumentException();
         }
@@ -45,7 +52,7 @@ public abstract class OptionUtil {
                 return NOT_APPLICABLE_INT;
             }
             
-            throw new IllegalArgumentException(number);
+            throw new Exception(number);
         }
         
         final int decimalIndex = number.indexOf('.');
@@ -63,7 +70,7 @@ public abstract class OptionUtil {
             return integer * thousand + fraction;
         } 
         
-        throw new IllegalStateException(number);
+        throw new Exception(number);
     }
     
     public static boolean isDateString(final String target) {
@@ -85,7 +92,8 @@ public abstract class OptionUtil {
         return true;
     }
     
-    public static Month getMonthFromMonthYear(final String date) {
+    public static Month getMonthFromMonthYear(final String date) 
+        throws Exception {
         if (date == null) {
             throw new IllegalArgumentException();
         }
@@ -99,14 +107,15 @@ public abstract class OptionUtil {
         
         final int monthLength = 3;
         if (i == date.length() || i + monthLength > date.length()) {
-            throw new IllegalArgumentException();
+            throw new Exception(date);
         }
         
         String monthName = date.substring(i, i + monthLength);
         return getMonth(monthName);
     }
     
-    public static int getYearFromMonthYear(final String date) {
+    public static int getYearFromMonthYear(final String date) 
+        throws Exception {
         if (date == null) {
             throw new IllegalArgumentException();
         }
@@ -120,7 +129,7 @@ public abstract class OptionUtil {
         
         final int monthLength = 3;
         if (i == date.length() || i + monthLength > date.length()) {
-            throw new IllegalArgumentException();
+            throw new Exception(date);
         }
         
         int j = i + monthLength;
@@ -132,13 +141,20 @@ public abstract class OptionUtil {
         
         final int yearLength = 4;
         if (j == date.length() || j + yearLength > date.length()) {
-            throw new IllegalArgumentException();
+            throw new Exception(date);
         }
         String yearName = date.substring(j, j + yearLength);
-        return Integer.parseInt(yearName);
+
+        try {
+            int result = Integer.parseInt(yearName);
+            return result;
+        } catch (NumberFormatException e) {
+            throw new Exception(yearName);
+        }
     }
 
-    public static Month getMonth(final String monthName) {
+    public static Month getMonth(final String monthName) 
+        throws Exception {
         if (monthName == null) {
             throw new IllegalArgumentException();
         }
@@ -179,6 +195,6 @@ public abstract class OptionUtil {
             return Month.DEC;
         }
         
-        throw new IllegalArgumentException(monthName);
+        throw new Exception(monthName);
     }
 }
