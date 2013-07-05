@@ -1,9 +1,10 @@
-package option;
+package date;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class OptionUtil {
+
+public abstract class DateUtil {
     
     private static final String JAN_STR = "Jan";
     private static final String FEB_STR = "Feb";
@@ -21,6 +22,8 @@ public abstract class OptionUtil {
     private static final String NOT_APPLICABLE = "N/A";
     
     public static final int NOT_APPLICABLE_INT = -5;
+    
+    public static final int UNRECORDED_INT = -4;
     
     public static int getNumber(final String number) 
         throws Exception {

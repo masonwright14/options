@@ -1,4 +1,8 @@
-package option;
+package date;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 
 public final class MyDate {
 
@@ -56,6 +60,21 @@ public final class MyDate {
         }
         
         this.month = aMonth;
+    }
+    
+    public static MyDate getCurrentDate() {
+        Calendar calendar = new GregorianCalendar();
+        Month month = 
+            Month.getByIndexOneBased(calendar.get(Calendar.MONTH) + 1);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        final int bias = 2000;
+        int year = calendar.get(Calendar.YEAR) - bias;
+        try {
+            return new MyDate(month, day, year);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public Month getMonth() {

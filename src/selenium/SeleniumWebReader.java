@@ -13,4 +13,18 @@ public abstract class SeleniumWebReader {
         driver.quit();
         return result;
     }
+    
+    public static void visit(final String address) {
+        final WebDriver driver = new FirefoxDriver();
+        driver.get(address);
+
+        try {
+            final long sleepTime = 10000L;
+            Thread.sleep(sleepTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        driver.quit();
+    }
 }

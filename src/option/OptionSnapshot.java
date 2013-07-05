@@ -1,5 +1,7 @@
 package option;
 
+import date.MyDate;
+
 public final class OptionSnapshot {
 
     private final String optionSymbol;
@@ -15,6 +17,8 @@ public final class OptionSnapshot {
     private final int volume;
     
     private final int openInterval;
+    
+    private final MyDate snapshotDate;
     
     private static final String OPTION_SYMBOL = "OptionSymbol";
     private static final String STOCK_SYMBOL = "StockSymbol";
@@ -36,7 +40,8 @@ public final class OptionSnapshot {
         final int aAskInThousandths, 
         final int aLastInThousandths,
         final int aVolume,
-        final int aOpenInterval
+        final int aOpenInterval,
+        final MyDate aSnapshotDate
     ) throws InstantiationException {
         if (!OptionSymbolUtil.isOptionSymbol(aOptionSymbol)) {
             throw new InstantiationException(aOptionSymbol);
@@ -50,6 +55,10 @@ public final class OptionSnapshot {
             throw new InstantiationException();
         }
         
+        if (aSnapshotDate == null) {
+            throw new InstantiationException();
+        }
+        
         this.optionSymbol = aOptionSymbol;
         this.stockSymbol = aStockSymbol;
         this.bidInThousandths = aBidInThousandths;
@@ -57,6 +66,11 @@ public final class OptionSnapshot {
         this.lastInThousandths = aLastInThousandths;
         this.volume = aVolume;
         this.openInterval = aOpenInterval;
+        this.snapshotDate = aSnapshotDate;
+    }
+    
+    public MyDate getSnapshotDate() {
+        return this.snapshotDate;
     }
 
     public String getOptionSymbol() {
@@ -121,6 +135,8 @@ public final class OptionSnapshot {
         builder.append(volume);
         builder.append(", openInterval=");
         builder.append(openInterval);
+        builder.append(", snapshotDate=");
+        builder.append(snapshotDate);
         builder.append("]");
         return builder.toString();
     }

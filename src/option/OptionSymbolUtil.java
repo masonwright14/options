@@ -3,6 +3,9 @@ package option;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import date.DateUtil;
+import date.MyDate;
+
 public abstract class OptionSymbolUtil {
     
     public static boolean isMiniOptionSymbol(final String target) {
@@ -103,7 +106,7 @@ public abstract class OptionSymbolUtil {
     }
     
     private static int getYearFromDate(final String dateString) {
-        if (!OptionUtil.isDateString(dateString)) {
+        if (!DateUtil.isDateString(dateString)) {
             throw new IllegalArgumentException();
         }
         
@@ -115,7 +118,7 @@ public abstract class OptionSymbolUtil {
     }
     
     private static int getMonthFromDate(final String dateString) {
-        if (!OptionUtil.isDateString(dateString)) {
+        if (!DateUtil.isDateString(dateString)) {
             throw new IllegalArgumentException();
         }
         
@@ -130,7 +133,7 @@ public abstract class OptionSymbolUtil {
     }
     
     private static int getDayFromDate(final String dateString) {
-        if (!OptionUtil.isDateString(dateString)) {
+        if (!DateUtil.isDateString(dateString)) {
             throw new IllegalArgumentException();
         }
         

@@ -10,8 +10,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import option.MyDate;
-import option.OptionUtil;
+import date.DateUtil;
+import date.MyDate;
+
 import stocksymbols.StockSymbolWiki;
 
 public abstract class StockListFinder {
@@ -112,7 +113,7 @@ public abstract class StockListFinder {
      * 0 if same, + if first is greater (later)
      */
     private static int compareDateStrings(final String a, final String b) {
-        if (!OptionUtil.isDateString(a) || !OptionUtil.isDateString(b)) {
+        if (!DateUtil.isDateString(a) || !DateUtil.isDateString(b)) {
             throw new IllegalArgumentException();
         }
         
@@ -154,7 +155,7 @@ public abstract class StockListFinder {
     }
     
     private static int getYear(final String dateString) {
-        if (!OptionUtil.isDateString(dateString)) {
+        if (!DateUtil.isDateString(dateString)) {
             throw new IllegalArgumentException();
         }
         
@@ -166,7 +167,7 @@ public abstract class StockListFinder {
     }
     
     private static int getMonth(final String dateString) {
-        if (!OptionUtil.isDateString(dateString)) {
+        if (!DateUtil.isDateString(dateString)) {
             throw new IllegalArgumentException();
         }
         
@@ -181,7 +182,7 @@ public abstract class StockListFinder {
     }
     
     private static int getDay(final String dateString) {
-        if (!OptionUtil.isDateString(dateString)) {
+        if (!DateUtil.isDateString(dateString)) {
             throw new IllegalArgumentException();
         }
         
