@@ -1,4 +1,3 @@
-
 # fileName: String name of file
 #
 # result: a list of lines from the file, with newlines removed

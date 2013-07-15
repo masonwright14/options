@@ -16,3 +16,7 @@ def getStockDate(stringDate):
 # result: a datetime.date object
 def getDate(year, month, day):
     return datetime.date(year, month, day)
+
+# result: a datetime.date object
+def today():
+    return datetime.date.today()
