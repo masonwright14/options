@@ -9,7 +9,7 @@ from scipy.stats import norm
 #
 # result: the blackScholes model value of a call option on one share of the underlying stock
 def w(x, k, r, t, sigma):
-    return x * norm.cdf(d1(x,k,r,t,sigma)) - k * exp(-1 * r * t) * norm.cdf(d2(x,k,r,t,sigma))
+    return x * norm.cdf(d1(x, k, r, t, sigma)) - k * exp(-1 * r * t) * norm.cdf(d2(x, k, r, t, sigma))
 
 # x = underlying price in dollars
 # k = strike price in dollars
@@ -19,7 +19,7 @@ def w(x, k, r, t, sigma):
 #
 # result: number of shares of the underlying needed to balance a call option on 1 share
 def w1(x, k, r, t, sigma):
-    return norm.cdf(d1(x ,k, r, t, sigma))
+    return norm.cdf(d1(x, k, r, t, sigma))
 
 # x = underlying price in dollars
 # k = strike price in dollars
@@ -91,7 +91,3 @@ def excessDailyDollarReturn2(xf, xi, ti, k, r, sigma):
 # since the previous trading day's end
 def excessDailyDollarReturn(wf, wi, xf, xi, w1, r):
     return (wf - wi) - w1 * (xf - xi) - (wf - w1 * xf) * (exp(r / 252.0) - 1)
-
-if __name__ == '__main__':
-    print excessDailyDollarReturn2(100, 100, 0.5, 100, 0.02, 0.2)
-    
