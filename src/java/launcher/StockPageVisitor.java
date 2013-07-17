@@ -14,15 +14,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import date.DateUtil;
-import date.MyDate;
-
 import notifications.EmailSender;
 import option.OptionSnapshot;
 import option.OptionSymbolUtil;
+import option.OptionUtil;
 import selenium.SeleniumWebReader;
 import stocksymbols.StockSymbolWiki;
 import web.WebStrings;
+import date.DateUtil;
+import date.MyDate;
 
 
 public abstract class StockPageVisitor {
@@ -245,11 +245,11 @@ public abstract class StockPageVisitor {
                     new OptionSnapshot(
                         c.get(optionSymbolIndex), 
                         stockSymbol, 
-                        DateUtil.getPriceInThousandths(c.get(bidIndex)), 
-                        DateUtil.getPriceInThousandths(c.get(askIndex)), 
-                        DateUtil.getPriceInThousandths(c.get(lastIndex)),
-                        DateUtil.getNumber(c.get(volumeIndex)), 
-                        DateUtil.getNumber(c.get(openIntervalIndex)),
+                        OptionUtil.getPriceInThousandths(c.get(bidIndex)), 
+                        OptionUtil.getPriceInThousandths(c.get(askIndex)), 
+                        OptionUtil.getPriceInThousandths(c.get(lastIndex)),
+                        OptionUtil.getNumber(c.get(volumeIndex)), 
+                        OptionUtil.getNumber(c.get(openIntervalIndex)),
                         MyDate.getCurrentDate()
                     )
                 );
@@ -272,11 +272,11 @@ public abstract class StockPageVisitor {
                     new OptionSnapshot(
                         p.get(optionSymbolIndex), 
                         stockSymbol, 
-                        DateUtil.getPriceInThousandths(p.get(bidIndex)), 
-                        DateUtil.getPriceInThousandths(p.get(askIndex)), 
-                        DateUtil.getPriceInThousandths(p.get(lastIndex)),
-                        DateUtil.getNumber(p.get(volumeIndex)), 
-                        DateUtil.getNumber(p.get(openIntervalIndex)),
+                        OptionUtil.getPriceInThousandths(p.get(bidIndex)), 
+                        OptionUtil.getPriceInThousandths(p.get(askIndex)), 
+                        OptionUtil.getPriceInThousandths(p.get(lastIndex)),
+                        OptionUtil.getNumber(p.get(volumeIndex)), 
+                        OptionUtil.getNumber(p.get(openIntervalIndex)),
                         MyDate.getCurrentDate()
                     )
                 );

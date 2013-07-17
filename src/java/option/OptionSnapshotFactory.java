@@ -3,7 +3,6 @@ package option;
 import java.util.ArrayList;
 import java.util.List;
 
-import date.DateUtil;
 import date.MyDate;
 
 
@@ -41,9 +40,9 @@ public abstract class OptionSnapshotFactory {
         int askInThous = 0;
         int lastInThous = 0;
         try {
-            bidInThous = DateUtil.getNumber(data.get(2));
-            askInThous = DateUtil.getNumber(data.get(3));
-            lastInThous = DateUtil.getNumber(data.get(4));
+            bidInThous = OptionUtil.getNumber(data.get(2));
+            askInThous = OptionUtil.getNumber(data.get(3));
+            lastInThous = OptionUtil.getNumber(data.get(4));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -52,13 +51,13 @@ public abstract class OptionSnapshotFactory {
         int volume = 0;
         int openInterval = 0;
         if (data.size() == 5) {
-            volume = DateUtil.UNRECORDED_INT;
-            openInterval = DateUtil.UNRECORDED_INT;
+            volume = OptionUtil.UNRECORDED_INT;
+            openInterval = OptionUtil.UNRECORDED_INT;
 
         } else if (data.size() == 7) {
             try {
-                volume = DateUtil.getNumber(data.get(5));
-                openInterval = DateUtil.getNumber(data.get(6));
+                volume = OptionUtil.getNumber(data.get(5));
+                openInterval = OptionUtil.getNumber(data.get(6));
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

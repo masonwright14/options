@@ -17,7 +17,7 @@ public abstract class EmailSender {
         final String body
     ) {
         String username = "masonwright14@gmail.com";
-        String password = "hwaznvckkabfwpwp";
+        String password = "wtlzbdiotendecfz";
         String smtphost = "smtp.gmail.com";
         String from = "masonwright14@gmail.com";
         Transport myTransport = null;

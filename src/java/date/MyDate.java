@@ -4,7 +4,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 
-public final class MyDate {
+public final class MyDate implements Comparable<MyDate> {
 
     private final Month month;
     
@@ -100,9 +100,56 @@ public final class MyDate {
         builder.append(month);
         builder.append(", day=");
         builder.append(day);
-        builder.append(", year=");
-        builder.append(year);
+        builder.append(", year=20");
+        builder.append(String.format("%02d", year));
         builder.append("]");
         return builder.toString();
+    }
+    
+    public int daysFromThisToThat(final MyDate that) {
+        Calendar calendarThis = 
+            new GregorianCalendar(
+                this.year + 2000, 
+                this.month.getIndexOneBased(), 
+                this.day
+            );
+        Calendar calendarThat = 
+            new GregorianCalendar(
+                that.year + 2000, 
+                that.month.getIndexOneBased(), 
+                that.day
+            );
+        final long thisTime = calendarThis.getTimeInMillis();
+        final long thatTime = calendarThat.getTimeInMillis();
+        final long differenceInMillis = thatTime - thisTime;
+        return Math.round(differenceInMillis / (1000 * 3600 * 24));
+    }
+
+    @Override
+    public int compareTo(final MyDate that) {
+        if (this == that) {
+            return 0;
+        }
+        
+        if (this.year < that.year) {
+            return -1;
+        }
+        if (this.year > that.year) {
+            return 1;
+        }
+        if (this.month.getIndexOneBased() < that.month.getIndexOneBased()) {
+            return -1;
+        }
+        if (this.month.getIndexOneBased() > that.month.getIndexOneBased()) {
+            return 1;
+        }
+        if (this.day < that.day) {
+            return -1;
+        }
+        if (this.day > that.day) {
+            return 1;
+        }
+        
+        return 0;
     }
 }

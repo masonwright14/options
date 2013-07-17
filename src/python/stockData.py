@@ -30,6 +30,9 @@ def getLastYearSigma(stockSymbol, lastDate):
 def getLastYearClosingPrices(stockSymbol, lastDate):
     return getClosingPrices(stockSymbol, lastDate, 252)
 
+def getMostRecentClose(stockSymbol, lastDate):
+    return getClosingPrices(stockSymbol, lastDate, 1)[0]
+
 # stockSymbol:  a String that represents the ticker symbol of a stock
 # lastDate: a datetime.date object. the closing prices returned will
 # be on or before this date

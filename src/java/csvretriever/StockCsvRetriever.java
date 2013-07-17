@@ -2,12 +2,11 @@ package csvretriever;
 
 import java.io.File;
 
-import date.MyDate;
-
 import selenium.SeleniumWebReader;
 import stocksymbols.StockSymbolWiki;
+import date.MyDate;
 
-public abstract class CsvRetriever {
+public abstract class StockCsvRetriever {
 
     private static final String PREFIX = 
         "http://ichart.finance.yahoo.com/table.csv?s="; // get CSV for a stock
