@@ -22,7 +22,7 @@ def minPrice(x, k, r, t, d):
 #
 # result: the Black-Scholes-Merton model value of a call option on one share of the underlying stock,
 # with the dividends correction and early exercise approximation
-def wWithDividiendsAmerican(x, k, r, td, t, sigma, d, d2):
+def wWithDividendsAmerican(x, k, r, td, t, sigma, d, d2):
     return max(wWithDividends(x, k, r, td, sigma, d2), wWithDividends(x, k, r, t, sigma, d))
         
 # x = underlying price in dollars
@@ -91,7 +91,7 @@ def impliedSigmaWithDividendAmerican(c, x, k, r, td, t, d, d2):
     myMax = 2.0
     while (myMax - myMin > tolerance):
         guess = (myMax + myMin) / 2.0
-        guessResult = wWithDividiendsAmerican(x, k, r, td, t, guess, d, d2)
+        guessResult = wWithDividendsAmerican(x, k, r, td, t, guess, d, d2)
         if guessResult < c:
             myMin = guess
         else:

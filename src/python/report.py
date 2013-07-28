@@ -76,7 +76,7 @@ def printReport(aDate):
                 if (d2 == d):
                     print "error: " + option
                 if (td > 0):
-                    blackScholesDivAmer = optionAnalysis.wWithDividiendsAmerican(stockPrice, strike, r, td / 252.0, tradingDaysLeft / 252.0, volatility, d, d2)
+                    blackScholesDivAmer = optionAnalysis.wWithDividendsAmerican(stockPrice, strike, r, td / 252.0, tradingDaysLeft / 252.0, volatility, d, d2)
             lastOptionPrice = optionData.getLast(aDate, option)
             impliedVol = "N/A"
             if lastOptionPrice > 0:
