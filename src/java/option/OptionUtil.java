@@ -32,7 +32,7 @@ public abstract class OptionUtil {
             throw new IllegalArgumentException();
         }
         final boolean couldBePrice = 
-            number.matches("\\d{1,6}\\.\\d{2,3}");
+            number.matches("[\\d|,]{1,6}\\.\\d{2,3}");
         if (!couldBePrice) {
             if (number.equals(NOT_APPLICABLE)) {
                 return NOT_APPLICABLE_INT;
@@ -42,7 +42,8 @@ public abstract class OptionUtil {
         }
         
         final int decimalIndex = number.indexOf('.');
-        final String integerPart = number.substring(0, decimalIndex);
+        final String integerPart = 
+            number.substring(0, decimalIndex).replaceAll(",", "");
         final String fractionPart = number.substring(decimalIndex + 1);
         final int integer = Integer.parseInt(integerPart);
         final int fraction = Integer.parseInt(fractionPart);

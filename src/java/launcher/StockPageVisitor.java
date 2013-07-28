@@ -231,7 +231,7 @@ public abstract class StockPageVisitor {
         final int bidIndex = callTableData.get(0).indexOf("Bid");
         final int askIndex = callTableData.get(0).indexOf("Ask");
         final int volumeIndex = callTableData.get(0).indexOf("Vol");
-        final int openIntervalIndex = callTableData.get(0).indexOf("Open Int");
+        final int openInterestIndex = callTableData.get(0).indexOf("Open Int");
         
         List<OptionSnapshot> result = new ArrayList<OptionSnapshot>();
         for (int callIndex = 1; callIndex < callTableData.size(); callIndex++) {
@@ -249,7 +249,7 @@ public abstract class StockPageVisitor {
                         OptionUtil.getPriceInThousandths(c.get(askIndex)), 
                         OptionUtil.getPriceInThousandths(c.get(lastIndex)),
                         OptionUtil.getNumber(c.get(volumeIndex)), 
-                        OptionUtil.getNumber(c.get(openIntervalIndex)),
+                        OptionUtil.getNumber(c.get(openInterestIndex)),
                         MyDate.getCurrentDate()
                     )
                 );
@@ -276,7 +276,7 @@ public abstract class StockPageVisitor {
                         OptionUtil.getPriceInThousandths(p.get(askIndex)), 
                         OptionUtil.getPriceInThousandths(p.get(lastIndex)),
                         OptionUtil.getNumber(p.get(volumeIndex)), 
-                        OptionUtil.getNumber(p.get(openIntervalIndex)),
+                        OptionUtil.getNumber(p.get(openInterestIndex)),
                         MyDate.getCurrentDate()
                     )
                 );

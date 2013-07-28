@@ -48,6 +48,6 @@ def getDirContents(aPath):
     return getBaseNames(getSubpaths(aPath))
     
 if __name__ == '__main__':
-    print getSubpaths("stockPrices")
-    print getDirContents("stockPrices")
+    #print getSubpaths("stockPrices")
+    #print getDirContents("stockPrices")
     pass

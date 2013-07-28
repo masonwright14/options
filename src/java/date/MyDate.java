@@ -93,6 +93,14 @@ public final class MyDate implements Comparable<MyDate> {
         return this.year;
     }
     
+    public String getCSVString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(String.format("%02d", day))
+            .append(String.format("%02d", month.getIndexOneBased()))
+            .append(String.format("%02d", year));
+        return builder.toString();
+    }
+    
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -107,22 +115,28 @@ public final class MyDate implements Comparable<MyDate> {
     }
     
     public int daysFromThisToThat(final MyDate that) {
+        final int yearOffset = 2000;
         Calendar calendarThis = 
             new GregorianCalendar(
-                this.year + 2000, 
+                this.year + yearOffset, 
                 this.month.getIndexOneBased(), 
                 this.day
             );
         Calendar calendarThat = 
             new GregorianCalendar(
-                that.year + 2000, 
+                that.year + yearOffset, 
                 that.month.getIndexOneBased(), 
                 that.day
             );
         final long thisTime = calendarThis.getTimeInMillis();
         final long thatTime = calendarThat.getTimeInMillis();
         final long differenceInMillis = thatTime - thisTime;
-        return Math.round(differenceInMillis / (1000 * 3600 * 24));
+        final int millis = 1000;
+        final int secondsPerHour = 3600;
+        final int hoursPerDay = 24;
+        return Math.round(
+            differenceInMillis / (millis * secondsPerHour * hoursPerDay)
+        );
     }
 
     @Override

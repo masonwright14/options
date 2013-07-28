@@ -49,15 +49,15 @@ public abstract class OptionSnapshotFactory {
         }
 
         int volume = 0;
-        int openInterval = 0;
+        int openInterest = 0;
         if (data.size() == 5) {
             volume = OptionUtil.UNRECORDED_INT;
-            openInterval = OptionUtil.UNRECORDED_INT;
+            openInterest = OptionUtil.UNRECORDED_INT;
 
         } else if (data.size() == 7) {
             try {
                 volume = OptionUtil.getNumber(data.get(5));
-                openInterval = OptionUtil.getNumber(data.get(6));
+                openInterest = OptionUtil.getNumber(data.get(6));
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -72,7 +72,7 @@ public abstract class OptionSnapshotFactory {
                 askInThous,
                 lastInThous,
                 volume,
-                openInterval,
+                openInterest,
                 snapshotDate
             );
         } catch (InstantiationException e) {

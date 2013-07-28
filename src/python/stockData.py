@@ -1,6 +1,10 @@
+from math import exp, log
+from random import gauss
 import fileHandler
 import dateHandler
 import optionAnalysis
+import optionSymbolHandler
+import interestData
 
 # stockSymbol: a String that represents the ticker symbol of a stock
 #
@@ -30,8 +34,106 @@ def getLastYearSigma(stockSymbol, lastDate):
 def getLastYearClosingPrices(stockSymbol, lastDate):
     return getClosingPrices(stockSymbol, lastDate, 252)
 
+# stockSymbol: a String that represents the ticker symbol of a stock
+# lastDate: a datetime.date object
+#
+# result: the most recent stock closing price on or before lastDate
 def getMostRecentClose(stockSymbol, lastDate):
     return getClosingPrices(stockSymbol, lastDate, 1)[0]
+
+# optionSymbol: the ticker symbol of an option
+# currentDate: a datetime.date object, representing the most recent date
+# on which historical data should be used
+# r: the risk free interest rate, annualized and continuously compounding
+#
+# result: a prediction of the final intrinsic value of the call option,
+# calculated as e^(-r * years to maturity) * mean(current stock price * (xi / xj) - k)+,
+# where i - j = trading days to maturity of the option, k = strike price, for all i
+# in previous 756 trading days, or 3 years.
+def getExpectedFinalIntrinsicValue2(optionSymbol, currentDate, r):
+    stockSymbol = optionSymbolHandler.getStockSymbol(optionSymbol)
+    dateRange = 756
+    daysLeft = dateHandler.daysBetween(currentDate, optionSymbolHandler.getExpirationDate(optionSymbol))
+    k = optionSymbolHandler.getStrikeInDollars(optionSymbol)
+    return getExpectedFinalIntrinsicValue(stockSymbol, currentDate, dateRange, daysLeft, r, k)
+
+# stockSymbol: ticker symbol of a stock
+# currentDate: a datetime.date object, representing the most recent date
+# on which historical data should be used
+# date range: how many days in the past to examine stock prices
+# daysLeft: days to maturity of the option
+# r: the risk free interest rate, annualized and continuously compounding
+# k: strike price of the call option
+#
+# result: a prediction of the final intrinsic value of the call option,
+# calculated as e^(-r * daysLeft / 252.0) * mean(current stock price * (xi / xj) - k)+,
+# where i - j = trading days to maturity of the option, for all i
+# in previous dateRange trading days.
+def getExpectedFinalIntrinsicValue(stockSymbol, currentDate, dateRange, daysLeft, r, k):
+    x = getMostRecentClose(stockSymbol, currentDate)
+    prices = getClosingPrices(stockSymbol, currentDate, dateRange)
+    mySum = 0
+    i = daysLeft
+    while i < len(prices):
+        mySum += max(0, x * (prices[i] / float(prices[i - daysLeft])) - k)
+        i += 1
+    meanIntrinsicValue = float(mySum) / (len(prices) - daysLeft)
+    return meanIntrinsicValue * exp(-1 * r * daysLeft / 252.0)
+
+def excessStockKurtosis(stockSymbol):
+    howMany = 504
+    return excessKurtosis(getClosingPrices(stockSymbol, dateHandler.today(), howMany))
+
+#    excess kurtosis = mu4 / sigma4 - 3
+#    where:
+#    mu4 = E( (X - mu)^4 )
+#    sigma4 = ( E( (X - mu)^2 ) )^2
+def excessKurtosis(values):
+    myMean = sum(values) / len(values)
+    mu4 = sum(map(lambda x: (x - myMean) ** 4, values)) / len(values)
+    sigma4 = (sum(map(lambda x: (x - myMean) ** 2, values)) / len(values)) ** 2
+    return mu4 / sigma4 - 3
+
+# test the excessKurtosis function on a sample of a normal distribution.
+# should return a value near 0.
+def testExcessKurtosis():
+    data = []
+    points = 504
+    while points > 0:
+        data.append(gauss(0, 1))
+        points -= 1
+    print excessKurtosis(data)
+    
+def testExcessKurtosisHigh():
+    data = []
+    points = 504
+    while points > 0:
+        data.append(gauss(0, 1))
+        points -= 1
+    points = 100
+    while points > 0:
+        data.append(0)
+        points -= 1
+    points = 10
+    while points > 0:
+        data.append(4)
+        points -= 1 
+    points = 10  
+    while points > 0:
+        data.append(-4)
+        points -= 1   
+    print excessKurtosis(data)
+
+# Y = ln(Xt+1) - ln(Xt)
+# prices: list of stock prices in dollars
+#
+# result: list of log(prices[i] / prices[i-1]) for all i >= 1
+def getLogReturnList(prices):
+    result = []
+    i = 1
+    while i < len(prices):
+        result.append(log(prices[i]) - log(prices[i - 1]))
+    return result
 
 # stockSymbol:  a String that represents the ticker symbol of a stock
 # lastDate: a datetime.date object. the closing prices returned will
@@ -63,3 +165,11 @@ def getClosingPrices(stockSymbol, lastDate, howMany):
         result.append(float(rows[i][4]))
         i -= 1
     return result
+
+if __name__ == '__main__':
+    #r = interestData.continuousInterest(dateHandler.getDate(2013, 6, 24), dateHandler.getDate(2013, 7, 20))
+    #print getExpectedFinalIntrinsicValue2("AXP130720C00067500", dateHandler.getDate(2013, 6, 24), r)
+    #testExcessKurtosis()
+    #testExcessKurtosisHigh()
+    #print excessStockKurtosis("CSCO")
+    pass

@@ -16,7 +16,7 @@ public final class OptionSnapshot {
     
     private final int volume;
     
-    private final int openInterval;
+    private final int openInterest;
     
     private final MyDate snapshotDate;
     
@@ -26,12 +26,12 @@ public final class OptionSnapshot {
     private static final String ASK_IN_THOUSANDTHS = "AskInThousandths";
     private static final String LAST_IN_THOUSANDTHS = "LastInThousandths";
     private static final String VOLUME = "Volume";
-    private static final String OPEN_INTERVAL = "Open Interval";
+    private static final String OPEN_INTEREST = "Open Interest";
     
     private static final String CSV_HEADER =
         OPTION_SYMBOL + "," + STOCK_SYMBOL + "," + BID_IN_THOUSANDTHS 
         + "," + ASK_IN_THOUSANDTHS + "," + LAST_IN_THOUSANDTHS
-        + "," + VOLUME + "," + OPEN_INTERVAL;
+        + "," + VOLUME + "," + OPEN_INTEREST;
 
     public OptionSnapshot(
         final String aOptionSymbol, 
@@ -40,7 +40,7 @@ public final class OptionSnapshot {
         final int aAskInThousandths, 
         final int aLastInThousandths,
         final int aVolume,
-        final int aOpenInterval,
+        final int aOpenInterest,
         final MyDate aSnapshotDate
     ) throws InstantiationException {
         if (!OptionSymbolUtil.isOptionSymbol(aOptionSymbol)) {
@@ -65,7 +65,7 @@ public final class OptionSnapshot {
         this.askInThousandths = aAskInThousandths;
         this.lastInThousandths = aLastInThousandths;
         this.volume = aVolume;
-        this.openInterval = aOpenInterval;
+        this.openInterest = aOpenInterest;
         this.snapshotDate = aSnapshotDate;
     }
     
@@ -97,8 +97,8 @@ public final class OptionSnapshot {
         return this.volume;
     }
 
-    public int getOpenInterval() {
-        return this.openInterval;
+    public int getOpenInterest() {
+        return this.openInterest;
     }
 
     public static String getCSVHeader() {
@@ -113,7 +113,7 @@ public final class OptionSnapshot {
             .append(askInThousandths).append(',')
             .append(lastInThousandths).append(',')
             .append(volume).append(',')
-            .append(openInterval);
+            .append(openInterest);
         
         return builder.toString();
     }
@@ -133,8 +133,8 @@ public final class OptionSnapshot {
         builder.append(lastInThousandths);
         builder.append(", volume=");
         builder.append(volume);
-        builder.append(", openInterval=");
-        builder.append(openInterval);
+        builder.append(", openInterest=");
+        builder.append(openInterest);
         builder.append(", snapshotDate=");
         builder.append(snapshotDate);
         builder.append("]");

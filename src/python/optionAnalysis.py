@@ -1,6 +1,42 @@
 from math import log, sqrt, exp
 from scipy.stats import norm
+
+# x = underlying price in dollars
+# k = strike price in dollars
+# r = risk free interest rate, adjusted as continuously compounding
+# t = time to maturity in years
+# d = the present value of dividends for ex dividend dates before the option expires
+#
+# result: theoretical lower bound on the price of a call option to buy 1 share of stock
+def minPrice(x, k, r, t, d):
+    return max(0, x - d - k * exp(-1 * r * t))
+
+# x = underlying price in dollars
+# k = strike price in dollars
+# r = risk free interest rate, adjusted as continuously compounding
+# td = time to last ex dividend date before maturity, in years
+# t = time to maturity in years
+# sigma = square root of variance rate of return of the underlying
+# d = the present value of dividends for ex dividend dates before the option expires
+# d2 = the present value of dividends for ex dividend dates before the last ex dividend date before expiration
+#
+# result: the Black-Scholes-Merton model value of a call option on one share of the underlying stock,
+# with the dividends correction and early exercise approximation
+def wWithDividiendsAmerican(x, k, r, td, t, sigma, d, d2):
+    return max(wWithDividends(x, k, r, td, sigma, d2), wWithDividends(x, k, r, t, sigma, d))
         
+# x = underlying price in dollars
+# k = strike price in dollars
+# r = risk free interest rate, adjusted as continuously compounding
+# t = time to maturity in years
+# sigma = square root of variance rate of return of the underlying
+# d = the present value of dividends for ex dividend dates before the option expires
+#
+# result: the Black-Scholes-Merton model value of a call option on one share of the underlying stock,
+# with the dividends correction
+def wWithDividends(x, k, r, t, sigma, d):
+    return w(x - d, k, r, t, sigma * x / (x - d))
+
 # x = underlying price in dollars
 # k = strike price in dollars
 # r = risk free interest rate, adjusted as continuously compounding
@@ -42,7 +78,59 @@ def d2(x, k, r, t, sigma):
 # k = strike price in dollars
 # r = risk free interest rate, adjusted as continuously compounding
 # t = time to maturity in years
-# sigma = square root of variance rate of return of the underlying
+# td = time to last ex dividend date before maturity, in years
+# d = the present value of dividends for ex dividend dates before the option expires
+# d2 = the present value of dividends for ex dividend dates before the last ex dividend date before expiration
+#
+# result: implied volatility of the underlying, to a tolerance of 0.001,
+# based on the Black-Scholes-Merton model, with dividend correction
+# and early exercise approximation
+def impliedSigmaWithDividendAmerican(c, x, k, r, td, t, d, d2):
+    tolerance = 0.001
+    myMin = tolerance
+    myMax = 2.0
+    while (myMax - myMin > tolerance):
+        guess = (myMax + myMin) / 2.0
+        guessResult = wWithDividiendsAmerican(x, k, r, td, t, guess, d, d2)
+        if guessResult < c:
+            myMin = guess
+        else:
+            if guessResult > c:
+                myMax = guess
+            else:
+                return guess        
+    return (myMax + myMin) / 2.0
+
+# c = current price of the call option on 1 share of the underlying
+# x = underlying price in dollars
+# k = strike price in dollars
+# r = risk free interest rate, adjusted as continuously compounding
+# t = time to maturity in years
+# d = the present value of dividends for ex dividend dates before the option expires
+#
+# result: implied volatility of the underlying, to a tolerance of 0.001,
+# based on the Black-Scholes-Merton model, with dividend correction
+def impliedSigmaWithDividend(c, x, k, r, t, d):
+    tolerance = 0.001
+    myMin = tolerance
+    myMax = 2.0
+    while (myMax - myMin > tolerance):
+        guess = (myMax + myMin) / 2.0
+        guessResult = wWithDividends(x, k, r, t, guess, d)
+        if guessResult < c:
+            myMin = guess
+        else:
+            if guessResult > c:
+                myMax = guess
+            else:
+                return guess        
+    return (myMax + myMin) / 2.0
+
+# c = current price of the call option on 1 share of the underlying
+# x = underlying price in dollars
+# k = strike price in dollars
+# r = risk free interest rate, adjusted as continuously compounding
+# t = time to maturity in years
 #
 # result: implied volatility of the underlying, to a tolerance of 0.001,
 # based on the Black-Scholes-Merton model
@@ -147,4 +235,6 @@ if __name__ == '__main__':
     #print w(81.52, 145, 0.006, 572.0 / 252.0, 0.22)
     #print impliedSigma(8.2, 23.58, 16, 0.004, 26 / 252.0)
     #print w(23.58, 16, 0.004, 26 / 252.0, 2)
+    #print wWithDividends(23.58, 16, 0.004, 26 / 252.0, 2, 0.62073)
+    print minPrice(81.52, 70, 0.03, 20 / 252.0, 0.7)
     pass

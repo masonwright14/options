@@ -18,6 +18,15 @@ def getInterestDate(stringDate):
     month = int(stringDate[:2])
     return datetime.date(year, month, 1)
 
+# stringDate: DDMMYY
+#
+# result: a datetime.date object
+def getDividendDate(stringDate):
+    day = int(stringDate[:2])
+    month = int(stringDate[2:4])
+    year = int(stringDate[4:]) + 2000
+    return datetime.date(year, month, day)
+
 # year: int
 # month: int
 # day: int
@@ -25,6 +34,12 @@ def getInterestDate(stringDate):
 # result: a datetime.date object
 def getDate(year, month, day):
     return datetime.date(year, month, day)
+
+# initialDate: the datetime.date object to start from
+#
+# result: the datetime.date of the previous day
+def dayBefore(initialDate):
+    return initialDate - timedelta(days=1)
 
 # result: a datetime.date object
 def today():
@@ -144,4 +159,5 @@ if __name__ == '__main__':
     #print daysBetween(getDate(2013, 1, 1), today())
     #print tradingDaysBetween(getDate(2013, 1, 1), getDate(2014, 1, 1))
     #print daysBetween(getDate(2013, 1, 1), getDate(2014, 1, 1))
+    print dayBefore(getDate(2013, 1, 1))
     pass
