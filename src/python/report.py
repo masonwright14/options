@@ -120,7 +120,7 @@ def printReportsAfter(aDate):
 
 if __name__ == '__main__':
     #printReport(dateHandler.getDate(2013, 6, 24))
-    printReportsAfter(dateHandler.getDate(2013, 7, 17))
+    #printReportsAfter(dateHandler.getDate(2013, 7, 17))
     #printAllReports()
-    #printKurtosisReport()
+    printKurtosisReport()
     pass

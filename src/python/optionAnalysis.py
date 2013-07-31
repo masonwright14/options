@@ -203,6 +203,20 @@ def sigma(prices):
         i += 1
     return sqrt(252 * total / float((len(prices) - 2)))
 
+# prices = array of daily closing prices in dollars
+# result: volatility of the price range, where sigma is estimated as:
+# sqrt( 252 * (1/n) Sum i=1->n ((prices[i] - prices[i-1]) / prices[i-1])^2 )
+# based on 252 trading days per year and unbiased variant of MLE for standard deviation
+#
+# sigma = estimated historical standard deviation in log return of the underlying stock
+def simpleSigma(prices):
+    total = 0
+    i = 1
+    while i < len(prices):
+        total += ((prices[i] - prices[i-1]) / float(prices[i-1])) ** 2
+        i += 1
+    return sqrt(252 * total / float((len(prices) - 1)))
+
 # xf = new market value of stock
 # xi = previous market value of stock
 # ti = initial time to maturity in years of the call option

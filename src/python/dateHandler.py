@@ -159,5 +159,5 @@ if __name__ == '__main__':
     #print daysBetween(getDate(2013, 1, 1), today())
     #print tradingDaysBetween(getDate(2013, 1, 1), getDate(2014, 1, 1))
     #print daysBetween(getDate(2013, 1, 1), getDate(2014, 1, 1))
-    print dayBefore(getDate(2013, 1, 1))
+    #print dayBefore(getDate(2013, 1, 1))
     pass

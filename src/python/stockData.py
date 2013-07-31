@@ -82,7 +82,7 @@ def getExpectedFinalIntrinsicValue(stockSymbol, currentDate, dateRange, daysLeft
 
 def excessStockKurtosis(stockSymbol):
     howMany = 504
-    return excessKurtosis(getClosingPrices(stockSymbol, dateHandler.today(), howMany))
+    return excessKurtosis(getLogReturnList(getClosingPrices(stockSymbol, dateHandler.today(), howMany)))
 
 #    excess kurtosis = mu4 / sigma4 - 3
 #    where:
@@ -133,6 +133,7 @@ def getLogReturnList(prices):
     i = 1
     while i < len(prices):
         result.append(log(prices[i]) - log(prices[i - 1]))
+        i += 1
     return result
 
 # stockSymbol:  a String that represents the ticker symbol of a stock
@@ -164,6 +165,20 @@ def getClosingPrices(stockSymbol, lastDate, howMany):
     while i >= lowestIndex:
         result.append(float(rows[i][4]))
         i -= 1
+        
+    # handle stock splits in recent years:
+    # KO 2:1 split on 8/13/12
+    # halve stock prices before 8/13/12 if before-and-after prices are requested
+    if stockSymbol == "KO":
+        splitDate = dateHandler.getDate(2012, 8, 13)
+        if lastDate >= splitDate and howMany > dateHandler.tradingDaysBetween(splitDate, lastDate) + 3:
+            numberToCut = howMany - dateHandler.tradingDaysBetween(splitDate, lastDate) + 3
+            i = 0
+            while i < numberToCut:
+                # 2:1 split
+                result[i] = result[i] / 2.0
+                i += 1
+        
     return result
 
 if __name__ == '__main__':
@@ -171,5 +186,8 @@ if __name__ == '__main__':
     #print getExpectedFinalIntrinsicValue2("AXP130720C00067500", dateHandler.getDate(2013, 6, 24), r)
     #testExcessKurtosis()
     #testExcessKurtosisHigh()
-    #print excessStockKurtosis("CSCO")
+    print getClosingPrices("KO", dateHandler.today(), 504)
+    #print max(getClosingPrices("KO", dateHandler.today(), 504))
+    #print min(getClosingPrices("KO", dateHandler.today(), 504))
+    #print excessStockKurtosis("AA")
     pass
