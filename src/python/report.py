@@ -28,11 +28,17 @@ import garch
 # of the call option.
 # blackScholes: Black-Scholes-Merton model value of the option, based on 1 year historical volatility of the underlying
 # blackScholesDiv: Black-Scholes model value, with correction for dividends to be paid before expiration
+# blackScholesDivAmer: Black-Scholes model value, with correction for dividends and for possible early exercise of the call,
+# using the simplification of taking the max of the actual expiration value and the value that results when treating 
+# the last ex dividend date as the expiration date
+# blackScholesDivGarch: Black-Scholes model value, with correction for dividends and using the GARCH(1,1) estimate of volatility
+# instead of the exact historical volatility over the past year
 # lastOptionPrice: last price in dollars of the option that day
 # strikePrice: strike price of the option 
 # lastStockPrice: last price in dollars of the underlying that day
 # volHist: historical volatility of the log rate of return of the underlying. NOT volatility of the stock price,
 # but volatility of the log rate of return, as used in the Black-Scholes model.
+# volGarch: GARCH(1,1) estimate of the volatility, based on the previous year of stock prices.
 # volImpliedWithDivAmer: implied volatility of the log rate of return of the underlying, from the Black-Scholes model,
 # with the dividend correction, and the early exercise approximation.
 # implied volatility is estimated to within 0.001 tolerance with binary search. a result of under about 0.002
@@ -129,8 +135,8 @@ def printReportsAfter(aDate):
             print "Done with report: " + str(date)
 
 if __name__ == '__main__':
-    printReport(dateHandler.getDate(2013, 6, 24))
+    #printReport(dateHandler.getDate(2013, 6, 24))
     #printReportsAfter(dateHandler.getDate(2013, 7, 17))
-    #printAllReports()
+    printAllReports()
     #printKurtosisReport()
     pass
