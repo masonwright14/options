@@ -1,3 +1,4 @@
+from math import sqrt
 import dateHandler
 import optionData
 import interestData
@@ -6,6 +7,7 @@ import stockData
 import optionSymbolHandler
 import optionAnalysis
 import dividendData
+import garch
 
 # aDate: the datetime.date when option data were collected
 #
@@ -42,7 +44,7 @@ def printReport(aDate):
     fileName = "reports/report" + "".join([str(aDate.year - 2000).zfill(2), str(aDate.month).zfill(2), str(aDate.day).zfill(2)]) + ".csv"    
     outfile = open(fileName, 'w')
     
-    header = "optionSymbol,stockSymbol,tradingDaysLeft,rContinous,dividends,blackScholes,blackScholesDiv,blackScholesDivAmer,lastOptionPrice,strikePrice,lastStockPrice,volHist,volImpliedWithDivAmer,exVal3Yr"
+    header = "optionSymbol,stockSymbol,tradingDaysLeft,rContinous,dividends,blackScholes,blackScholesDiv,blackScholesDivAmer,blackScholesDivGarch,lastOptionPrice,strikePrice,lastStockPrice,volHist,volGarch,volImpliedWithDivAmer,exVal3Yr"
     outfile.write(header + '\n')
     
     expDates = optionData.getExpirationDates(aDate)
@@ -54,6 +56,11 @@ def printReport(aDate):
         stockPrice = stockData.getMostRecentClose(symbol, aDate)
         volatility = stockData.getLastYearSigma(symbol, aDate)
         optionSymbols = optionData.getOptionSymbols(symbol, aDate)
+        
+        lastYearPrices = stockData.getLastYearClosingPrices(symbol, aDate)
+        garchParams = garch.myNaiveGarchParams(lastYearPrices)
+        expDateToGarchSigma = {}
+        
         for option in optionSymbols:
             if not optionSymbolHandler.isCall(option):
                 continue
@@ -61,11 +68,14 @@ def printReport(aDate):
             tradingDaysLeft = dateHandler.tradingDaysBetween(expDate, aDate)
             if expDate < aDate or tradingDaysLeft == 0:
                 continue
+            if expDate not in expDateToGarchSigma:
+                expDateToGarchSigma[expDate] = sqrt(garch.garchAverage(garchParams[0], garchParams[1], garchParams[2], lastYearPrices, tradingDaysLeft))
             strike = optionSymbolHandler.getStrikeInDollars(option)
             r = expDateToR.get(expDate)
             d = dividendData.presentDividendValue(aDate, expDate, symbol, r)
             blackScholes = optionAnalysis.w(stockPrice, strike, r, tradingDaysLeft / 252.0, volatility)
             blackScholesDiv = optionAnalysis.wWithDividends(stockPrice, strike, r, tradingDaysLeft / 252.0, volatility, d)
+            blackScholesDivGarch = optionAnalysis.wWithDividends(stockPrice, strike, r, tradingDaysLeft / 252.0, expDateToGarchSigma[expDate], d)
             lastDivDate = dividendData.lastExDividendDate(aDate, expDate, symbol)
             blackScholesDivAmer = blackScholesDiv
             td = None
@@ -91,7 +101,7 @@ def printReport(aDate):
             impliedVolStr = "N/A"
             if (impliedVol != "N/A"):
                 impliedVolStr = "%.3f" % impliedVol
-            outfile.write("".join([option, ",", symbol, ",",str(tradingDaysLeft), ",", "%.4f" % r, ",", "%.3f" % d, ",", "%.3f" % blackScholes, ",", "%.3f" % blackScholesDiv, ",", "%.3f" % blackScholesDivAmer, ",", str(lastOptionPrice), ",", str(strike), ",", str(stockPrice), ",", "%.3f" % volatility, ",", impliedVolStr, ",", "%.3f" % exp3Yr]) + '\n')
+            outfile.write("".join([option, ",", symbol, ",",str(tradingDaysLeft), ",", "%.4f" % r, ",", "%.3f" % d, ",", "%.3f" % blackScholes, ",", "%.3f" % blackScholesDiv, ",", "%.3f" % blackScholesDivAmer, ",", "%.3f" % blackScholesDivGarch, ",", str(lastOptionPrice), ",", str(strike), ",", str(stockPrice), ",", "%.3f" % volatility, ",", "%.3f" % expDateToGarchSigma[expDate], ",", impliedVolStr, ",", "%.3f" % exp3Yr]) + '\n')
     outfile.close()
     
 def printKurtosisReport():
@@ -119,8 +129,8 @@ def printReportsAfter(aDate):
             print "Done with report: " + str(date)
 
 if __name__ == '__main__':
-    #printReport(dateHandler.getDate(2013, 6, 24))
+    printReport(dateHandler.getDate(2013, 6, 24))
     #printReportsAfter(dateHandler.getDate(2013, 7, 17))
     #printAllReports()
-    printKurtosisReport()
+    #printKurtosisReport()
     pass

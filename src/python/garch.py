@@ -135,10 +135,26 @@ def updateGuessAndLikelihood(currentGuess, stepSize, currentLikelihood, index, s
     lower = oldValue * (1 - stepSize)
     if lower < 0:
         lower = oldValue / 2
+    if index == 0 and lower < 0.000001:
+        lower = (oldValue + 0.000001) / 2.0
+    if index == 1 and lower < 0.01:
+        lower = (oldValue + 0.01) / 2.0
+    if index == 2 and lower < 0.7:
+        lower = (oldValue + 0.7) / 2.0
         
     higher = oldValue * (1 + stepSize)
     if higher > 1:
         higher = (1 + oldValue) / 2.0
+    if index == 0 and higher > 0.00001:
+        higher = (oldValue + 0.00001) / 2.0
+    if index == 1 and higher > 0.2:
+        higher = (oldValue + 0.2) / 2.0
+    if index == 2 and higher > 0.99:
+        higher = (oldValue + 0.99) / 2.0
+    if index == 1 and higher + currentGuess[2] >= 1:
+        higher = oldValue
+    if index == 2 and higher + currentGuess[1] >= 1:
+        higher = oldValue
 
     currentGuess[index] = lower
     lowResult = listLikelihood(currentGuess, sList)
@@ -282,12 +298,16 @@ def ljungBoxPValue(values, maxLag):
 # omega: scalar parameter in GARCH(1,1) model
 # alpha: ui^2 coefficient in GARCH(1,1) model
 # beta: sigma-i^2 coefficient in GARCH(1,1) model 
+# likelihood score: sum of log likelihoods of the data points, for the chosen parameters
+# long term volatility: estimated annual volatility of the stock in the limit as future time approaches inf
+# current volatility: estimated annual volatility at the end of the input time series
 # sigma-i^2 = omega + alpha * ui-1^2 + beta * sigma-i-1^2
 # where omega = gamma * Vl
 # and gamma + alpha + beta = 1
 # so 1 - alpha - beta = gamma
 #
-# result: Vl. Vl = omega / (1 - alpha - beta)
+# result: Vl. Vl = omega / (1 - alpha - beta). Vl is daily variance in stock price predicted in the limit
+# as the time in the future approaches infinity
 def getVl(omega, alpha, beta):
     return omega / (1 - alpha - beta)
 
@@ -315,6 +335,7 @@ def printGarchReport(sList):
     likelihood = listLikelihood(params, sList)
     vList = getVList(params, uList)
     currentVolatility = sqrt(vList[len(vList) - 1] * 252)
+    longTermVolatility = sqrt(getVl(params[0], params[1], params[2]) * 252)
     maxLag = 15
     i = 0
     while i < len(uList):
@@ -327,7 +348,9 @@ def printGarchReport(sList):
     i = 0
     print "omega: " + str(params[0]) + "\talpha: " + "%.3f" % params[1] + "\tbeta: " + "%.3f" % params[2]
     print "likelihood score: " + str(likelihood)
+    print "long term volatility: " + str(longTermVolatility)
     print "Current volatility: " + str(currentVolatility)
+    print "Simple historial volatility: " + str(optionAnalysis.sigma(sList))
     print ""
     print "autocorrelation:"
     print "lag \t\tu^2\t\tu^2/s^2"
@@ -337,10 +360,10 @@ def printGarchReport(sList):
     print ""
     uLjung = ljungBox(uList, maxLag)
     quotientLjung = ljungBox(vList, maxLag)
-    uLjnugPValue = ljungBoxPValue(uList, maxLag)
+    uLjungPValue = ljungBoxPValue(uList, maxLag)
     quotientLjnugPValue = ljungBoxPValue(vList, maxLag)
     print "Ljung-Box\t" + "%.3f" % uLjung + "\t\t" + "%.3f" % quotientLjung
-    print "P-Value\t\t" + "%.6f" % uLjnugPValue + "\t" + "%.6f" % quotientLjnugPValue
+    print "P-Value\t\t" + "%.6f" % uLjungPValue + "\t" + "%.6f" % quotientLjnugPValue
 
 if __name__ == '__main__':
     '''
@@ -379,11 +402,9 @@ if __name__ == '__main__':
     #print garchFutureDaily(params[0], params[1], params[2], prices, 30) * 252
     '''
     
-    
-    myDate = dateHandler.getDate(2012, 1, 1)
+    myDate = dateHandler.getDate(2013, 6, 24)
     prices = stockData.getLastYearClosingPrices("KO", myDate)
     printGarchReport(prices)
-    
     
     '''
     myDate = dateHandler.getDate(2012, 1, 1)
