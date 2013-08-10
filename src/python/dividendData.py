@@ -1,6 +1,7 @@
 import fileHandler
 import dateHandler
-from math import exp
+import stockData
+from math import exp, log
 
 fileName = "dividends/dividends.csv"
 
@@ -53,6 +54,22 @@ def presentDividendValue(startDate, endDate, stockSymbol, r):
         i += 1
     return mySum
 
+# startDate: the current date for present value discounting purposes,
+# also the first date when an ex dividend day would be counted
+# endDate: the last date for which an ex dividend day would be counted
+# stockSymbol: NYSE ticker symbol for a stock
+# r: the risk free interest rate to use in present value analysis
+#
+# result: the continuously compounding annual interest rate that would
+# produce the same return, measured by present value at date startDate,
+# as the dividends to be paid between startDate and endDate, when allowed
+# to compound from startDate to endDate.
+def getYield(startDate, endDate, stockSymbol, r):
+    d = presentDividendValue(startDate, endDate, stockSymbol, r)
+    dt = dateHandler.tradingDaysBetween(startDate, endDate) / 252.0
+    s0 = stockData.getMostRecentClose(stockSymbol, startDate)
+    return (log(s0 + d) - log(s0)) / dt
+
 # startDate: the first date that could be returned
 # endDate: the last date that could be returned
 # stockSymbol: NYSE ticker symbol for a stock
@@ -71,8 +88,9 @@ def lastExDividendDate(startDate, endDate, stockSymbol):
 if __name__ == '__main__':
     #print getDatesInOrder("AXP")
     #print getThousandthsInOrder("AXP")
-    #startDate = dateHandler.getDate(2013, 1, 1)
-    #endDate = dateHandler.getDate(2014, 1, 1)
-    #print presentDividendValue(startDate, endDate, "AXP", 0.02)
+    startDate = dateHandler.getDate(2013, 1, 1)
+    endDate = dateHandler.getDate(2014, 1, 1)
+    print presentDividendValue(startDate, endDate, "KO", 0.02)
     #print lastExDividendDate(startDate, endDate, "AXP")
+    print getYield(startDate, endDate, "KO", 0.02)
     pass

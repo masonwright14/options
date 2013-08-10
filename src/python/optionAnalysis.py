@@ -250,5 +250,6 @@ if __name__ == '__main__':
     #print impliedSigma(8.2, 23.58, 16, 0.004, 26 / 252.0)
     #print w(23.58, 16, 0.004, 26 / 252.0, 2)
     #print wWithDividends(23.58, 16, 0.004, 26 / 252.0, 2, 0.62073)
-    print minPrice(81.52, 70, 0.03, 20 / 252.0, 0.7)
+    #print minPrice(81.52, 70, 0.03, 20 / 252.0, 0.7)
+    print w(42, 40, 0.1, 0.5, 0.2)
     pass
